@@ -1,23 +1,41 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lytPrincipal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/lytContenedor"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/LblNombre"
-        android:text="@string/nombre"
+    android:layout_height="match_parent">
+    <TableLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/TxtNombre"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text" />
-    <Button
-        android:id="@+id/BtnAceptar"
-        android:text="@string/aceptar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+        android:id="@+id/lytTable"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+        <TableRow >
+            <TextView
+                android:id="@+id/LblNombre"
+                android:text="@string/nombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+            <EditText
+                android:id="@+id/TxtNombre"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+        </TableRow>
+        <TableRow>
+            <Button
+                android:id="@+id/BtnAceptar"
+                android:text="@string/aceptar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:layout_margin="10dp"/>
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>
