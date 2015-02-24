@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinner_array">
+        <item>Elemento1-XML</item>
+        <item>Elemento2-XML</item>
+        <item>Elemento3-XML</item>
+        <item>Elemento4-XML</item>
+        <item>Elemento5-XML</item>
+    </string-array>
+</resources>
