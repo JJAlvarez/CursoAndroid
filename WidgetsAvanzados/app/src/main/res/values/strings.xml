@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WidgetsAvanzados</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="mensaje_personalizado">Mensaje Personalizado</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="title_activity_widget_config">WidgetConfig</string>
+    <string name="actualizar">Actualizar</string>
+    <string name="mi_widget_personalizado">Mi Widget Personalizado</string>
+
+</resources>
