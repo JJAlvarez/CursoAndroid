@@ -1,5 +1,9 @@
 package gt.org.kinal.angelchanquin.json.Handlers;
 
+import android.app.Activity;
+import android.content.Context;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import gt.org.kinal.angelchanquin.json.MainActivity;
 import gt.org.kinal.angelchanquin.json.Models.Autor;
 import gt.org.kinal.angelchanquin.json.Models.Libro;
 
@@ -24,6 +29,12 @@ public class JsonHandler {
     private final String API_URL = "http://192.168.100.141/webservice/public/api";
     private final String AUTORES_URL = API_URL + "/autores";
     private final String LIBROS_POR_AUTOR_URL = API_URL + "/librosPorAutor?idAutor=";
+
+    private Activity context;
+
+    public JsonHandler(Activity context){
+        this.context = context;
+    }
 
     private InputStream getInputStream(String uri){
         try{
@@ -53,7 +64,7 @@ public class JsonHandler {
         }
         catch (Exception e){
             e.printStackTrace();
-            throw new RuntimeException(e);
+            return null;
         }
         finally {
             if(reader != null){
@@ -62,7 +73,7 @@ public class JsonHandler {
                 }
                 catch (IOException e){
                     e.printStackTrace();
-                    throw new RuntimeException(e);
+                    return null;
                 }
             }
         }
@@ -78,7 +89,7 @@ public class JsonHandler {
             autoresList = new ArrayList<>();
         }catch (JSONException e){
             e.printStackTrace();
-            throw new RuntimeException(e);
+            return null;
         }
 
         for (int i = 0; i < array.length(); i++) {
@@ -89,7 +100,7 @@ public class JsonHandler {
                 autoresList.add(autor);
             }catch (JSONException e){
                 e.printStackTrace();
-                throw new RuntimeException(e);
+                return null;
             }
         }
         return autoresList;
@@ -104,7 +115,7 @@ public class JsonHandler {
             librosList = new ArrayList<>();
         }catch (JSONException e){
             e.printStackTrace();
-            throw new RuntimeException(e);
+            return null;
         }
 
         for (int i = 0; i < array.length(); i++) {
@@ -116,11 +127,12 @@ public class JsonHandler {
                 libro.setId(object.getInt("id"));
                 libro.setNombre(object.getString("nombre"));
                 libro.setIdAutor(object.getInt("idAutor"));
+                libro.setImageURL(object.getString("imageUrl"));
 
                 librosList.add(libro);
             }catch (JSONException e){
                 e.printStackTrace();
-                throw new RuntimeException(e);
+                return null;
             }
         }
         return librosList;

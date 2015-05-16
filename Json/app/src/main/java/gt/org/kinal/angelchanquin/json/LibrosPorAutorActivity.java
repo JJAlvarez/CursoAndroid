@@ -3,20 +3,27 @@ package gt.org.kinal.angelchanquin.json;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import gt.org.kinal.angelchanquin.json.Handlers.JsonHandler;
 import gt.org.kinal.angelchanquin.json.Models.Autor;
@@ -80,6 +87,18 @@ public class LibrosPorAutorActivity extends ActionBarActivity {
             TextView txtVNombreLibro = (TextView)item.findViewById(R.id.TxtNombreLibro);
             txtVNombreLibro.setText(librosArray[position].getNombre());
 
+            ImageView ivPortada = (ImageView)item.findViewById(R.id.imagePortada);
+            Bitmap bitmap = null;
+            try {
+                bitmap = (Bitmap) new CargarImagenesPortadaTask().execute(String.valueOf(position)).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            ivPortada.setImageBitmap(bitmap);
+
             return item;
         }
     }
@@ -100,8 +119,9 @@ public class LibrosPorAutorActivity extends ActionBarActivity {
         }
 
         protected Boolean doInBackground(String... params){
-            JsonHandler handler = new JsonHandler();
+            JsonHandler handler = new JsonHandler(LibrosPorAutorActivity.this);
             librosList = handler.getLibrosPorAutor(Integer.parseInt(params[0]));
+
             return true;
         }
 
@@ -113,5 +133,28 @@ public class LibrosPorAutorActivity extends ActionBarActivity {
             lvLibros.setAdapter(adaptador);
             this.progressDialog.dismiss();
         }
+    }
+
+    private class CargarImagenesPortadaTask extends AsyncTask<String, Integer, Bitmap>{
+
+        protected Bitmap doInBackground(String... params){
+            int position = Integer.parseInt(params[0]);
+            try{
+                String imageUrl = librosList.get(position).getImageURL();
+                System.out.println(imageUrl);
+                InputStream inputStream = (InputStream) new URL(imageUrl).getContent();
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                librosList.get(position).setBitmap(bitmap);
+                inputStream.close();
+                return bitmap;
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+//        protected void onPostExecute(Boolean result){
+//
+//        }
     }
 }

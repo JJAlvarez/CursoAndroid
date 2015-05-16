@@ -4,7 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,9 @@ public class MainActivity extends ActionBarActivity {
     private Autor[] autoresArray;
     private ListView lvAutores;
     private List<Autor> autoresList;
+    private ProgressDialog progressDialog;
+    private SwipeRefreshLayout refreshLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +44,31 @@ public class MainActivity extends ActionBarActivity {
 
         lvAutores = (ListView)findViewById(R.id.LvAutores);
         autoresList = new ArrayList<>();
+        refreshLayout = (SwipeRefreshLayout)findViewById(R.id.SwipeRefreshAutores);
 
-        CargarAutoresTask task = new CargarAutoresTask();
-        task.execute();
+        if(isOnline()){
+            progressDialog = new ProgressDialog(this);
+            cargarDatos();
+        }else{
+            Toast.makeText(this, "Network is not available", Toast.LENGTH_LONG).show();
+        }
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(isOnline()){
+                    refrescarDatos();
+                }else{
+                    Toast.makeText(MainActivity.this, "Network is not available", Toast.LENGTH_LONG).show();
+                    refreshLayout.setRefreshing(false);
+                }
+            }
+        });
 
         lvAutores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Autor item = (Autor)parent.getItemAtPosition(position);
+                Autor item = (Autor) parent.getItemAtPosition(position);
                 Intent intentLibrosPorAutor = new Intent(MainActivity.this, LibrosPorAutorActivity.class);
 
                 Bundle extras = new Bundle();
@@ -80,6 +104,29 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void cargarDatos(){
+        progressDialog.setMessage("Cargando datos...");
+        progressDialog.show();
+
+        CargarAutoresTask task = new CargarAutoresTask();
+        task.execute();
+    }
+
+    public void refrescarDatos(){
+        CargarAutoresTask task = new CargarAutoresTask();
+        task.execute();
+    }
+
+    public boolean isOnline(){
+        ConnectivityManager manager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = manager.getActiveNetworkInfo();
+        if(netInfo != null && netInfo.isConnectedOrConnecting()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     private class AdaptadorAutores extends ArrayAdapter<Autor>{
         public AdaptadorAutores(Context context, Autor[] autores){
             super(context, R.layout.list_item_autor, autores);
@@ -99,32 +146,29 @@ public class MainActivity extends ActionBarActivity {
 
     private class CargarAutoresTask extends AsyncTask<String, Integer, Boolean>{
 
-        private ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-
-        protected void onPreExecute(){
-            progressDialog.setMessage("Descargando datos...");
-            progressDialog.show();
-            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    CargarAutoresTask.this.cancel(true);
-                }
-            });
-        }
-
         protected Boolean doInBackground(String... params){
-            JsonHandler handler = new JsonHandler();
-            autoresList = handler.getAutores();
+            try{
+                JsonHandler handler = new JsonHandler(MainActivity.this);
+                autoresList = handler.getAutores();
+            }catch (Exception e){
+                e.printStackTrace();
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, getString(R.string.error_from_server), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
             return true;
         }
 
         protected void onPostExecute(Boolean result){
             autoresArray = new Autor[autoresList.size()];
             autoresList.toArray(autoresArray);
-
             AdaptadorAutores adaptador = new AdaptadorAutores(MainActivity.this, autoresArray);
             lvAutores.setAdapter(adaptador);
-            this.progressDialog.dismiss();
+            progressDialog.dismiss();
+            refreshLayout.setRefreshing(false);
         }
     }
 }

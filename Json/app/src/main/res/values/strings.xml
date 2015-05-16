@@ -4,4 +4,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_libros_por_autor">LibrosPorAutorActivity</string>
+    <string name="error_from_server">Error while trying to get data from server</string>
 </resources>
