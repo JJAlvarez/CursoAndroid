@@ -29,8 +29,6 @@ public class ClientesSqliteHelper extends SQLiteOpenHelper{
             String email = "email" + i + "@mail.com";
             db.execSQL("INSERT INTO Clientes (nombre, telefono, email) " +
                         "VALUES ('" + nombre + "', '" + telefono +"', '" + email + "')");
-
-
         }
     }
 
