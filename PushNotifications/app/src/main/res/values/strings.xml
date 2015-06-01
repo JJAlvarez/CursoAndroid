@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">PushNotifications</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="gcm_defaultSenderId">281952320666</string>
+    <string name="registering_message">Generating InstanceID token...</string>
+    <string name="gcm_send_message">Token retrieved and sent to server!</string>
+    <string name="token_error_message">Error ocurred. Please try to retrieve token again!</string>
+</resources>
